@@ -1,5 +1,5 @@
-import 'package:expensetrackerapp/presentation/login_screen.dart';
-import 'package:expensetrackerapp/presentation/spalash_screen.dart';
+import 'package:expensetrackerapp/features/login/login_presentation/start_screen.dart';
+import 'package:expensetrackerapp/features/splash_screen/splash_screen_presentation/spalash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -26,7 +26,7 @@ void main() {
           expect(find.byType(SplashScreen), findsOneWidget);
           await tester.pump(const Duration(milliseconds: 1600));
           await tester.pumpAndSettle();
-          expect(find.byType(LoginScreen), findsOneWidget);
+          expect(find.byType(StartScreen), findsOneWidget);
         });
   });
 }

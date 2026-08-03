@@ -1,4 +1,4 @@
-import 'package:expensetrackerapp/presentation/spalash_screen.dart';
+import 'package:expensetrackerapp/features/splash_screen/splash_screen_presentation/spalash_screen.dart';
 import 'package:flutter/material.dart';
 void main() {
   runApp(const MyApp());
@@ -12,8 +12,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Expense Tracker',
       theme: ThemeData(
-        // fontFamily: 'Inter',
-        fontFamily: 'FakeFontXYZ',
+        fontFamily: 'Inter',
       ),
       debugShowCheckedModeBanner: false,
       home: SplashScreen(),

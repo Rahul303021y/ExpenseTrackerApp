@@ -1,7 +1,11 @@
+import 'package:expensetrackerapp/core/storage/secure_storage_service.dart';
 import 'package:expensetrackerapp/core/theme.dart';
+import 'package:expensetrackerapp/features/home_screen/common/main_screen.dart';
+import 'package:expensetrackerapp/features/login/login_data/login_api_provider.dart';
+import 'package:expensetrackerapp/features/login/login_presentation/start_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:lottie/lottie.dart';
-import 'login_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -15,6 +19,69 @@ class _SplashScreenState extends State<SplashScreen>
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
 
+  void _goToHome() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const MainScreen()),
+    );
+  }
+
+  void _goToLogin() {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (_) => const StartScreen()),
+    );
+  }
+
+  Future<void> _navigate() async {
+    final storage = SecureStorageService();
+
+    final accessToken = await storage.getAccessToken();
+
+    if (!mounted) return;
+
+    // 1. No token → login
+    if (accessToken == null || accessToken.isEmpty) {
+      _goToLogin();
+      return;
+    }
+
+    // 2. Token still valid → home
+    if (!JwtDecoder.isExpired(accessToken)) {
+      _goToHome();
+      return;
+    }
+
+    // 3. Token expired → try refresh
+    final refreshToken = await storage.getRefreshToken();
+
+    if (refreshToken == null || refreshToken.isEmpty) {
+      await storage.clear();
+      _goToLogin();
+      return;
+    }
+
+    try {
+      final api = LoginApiProvider();
+
+      final result = await api.refreshToken(
+        refreshToken: refreshToken,
+        deviceId: "Demo",
+      );
+
+      // save new tokens
+      await storage.saveTokens(
+        accessToken: result.accessToken,
+        refreshToken: result.refreshToken,
+        accessTokenExpiry: result.accessTokenExpiry,
+      );
+      if (!mounted) return;
+      _goToHome();
+    } catch (e) {
+      await storage.clear();
+      _goToLogin();
+    }
+  }
   @override
   void initState() {
     super.initState();
@@ -27,27 +94,17 @@ class _SplashScreenState extends State<SplashScreen>
     _scaleAnimation = Tween<double>(
       begin: 3.0,
       end: 1.6,
-    ).animate(CurvedAnimation(
-      parent: _controller,
-      curve: Curves.easeInOut,
-    ));
+    ).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeInOut,
+      ),
+    );
     _controller.forward();
-    _controller.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        if (mounted) {
-          Navigator.pushReplacement(
-            context,
-            PageRouteBuilder(
-              transitionDuration: Duration.zero,
-              reverseTransitionDuration: Duration.zero,
-              pageBuilder: (_, __, ___) => const LoginScreen(),
-            ),
-          );
-        }
-      }
+    Future.delayed(const Duration(milliseconds: 1600), () {
+      _navigate();
     });
   }
-
   @override
   void dispose() {
     _controller.dispose();

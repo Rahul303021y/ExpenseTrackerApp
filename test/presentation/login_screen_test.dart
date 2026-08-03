@@ -1,4 +1,4 @@
-import 'package:expensetrackerapp/presentation/login_screen.dart';
+import 'package:expensetrackerapp/features/login/login_presentation/start_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -18,7 +18,7 @@ void main() {
 
           await tester.pumpWidget(
             const MaterialApp(
-              home: LoginScreen(),
+              home: StartScreen(),
             ),
           );
 
