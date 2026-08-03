@@ -1,0 +1,83 @@
+import 'package:expensetrackerapp/shared/common_ui/app_background.dart';
+import 'package:expensetrackerapp/shared/utils/bottom_curve_clipper.dart';
+import 'package:flutter/material.dart';
+
+class HomeHeader extends StatelessWidget {
+  final String userName;
+
+  const HomeHeader({super.key, required this.userName});
+
+  static const double height = 300;
+
+  @override
+  Widget build(BuildContext context) {
+    return ClipPath(
+      clipper: BottomCurveClipper(),
+      child: SizedBox(
+        height: height,
+        width: double.infinity,
+        child: AppBackground(
+          child: SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 50),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CircleAvatar(
+                          radius: 25,
+                          backgroundColor: Colors.white,
+                          child: Icon(
+                            Icons.person,
+                            color: Colors.black,
+                          )),
+                      const SizedBox(width: 12),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            "Good Afternoon,",
+                            style:
+                                TextStyle(color: Colors.white70, fontSize: 16),
+                          ),
+                          const SizedBox(height: 6),
+                          Text(
+                            userName,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 30,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 4),
+                    child: Container(
+                      height: 40,
+                      width: 40,
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(.08),
+                        borderRadius: BorderRadius.circular(14),
+                      ),
+                      child: IconButton(
+                        onPressed: () {},
+                        icon: const Icon(Icons.notifications_none_rounded,
+                            color: Colors.white),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}

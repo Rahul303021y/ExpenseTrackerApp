@@ -1,16 +1,24 @@
+import 'package:expensetrackerapp/core/storage/secure_storage_service.dart';
+import 'package:expensetrackerapp/features/login/login_bloc/login_bloc.dart';
+import 'package:expensetrackerapp/features/login/login_data/login_repo.dart';
+import 'package:expensetrackerapp/features/login/login_presentation/login_page.dart';
+import 'package:expensetrackerapp/shared/common_ui/app_button.dart';
 import 'package:expensetrackerapp/shared/utils/clippers.dart';
 import 'package:expensetrackerapp/shared/utils/diagonal_clipper.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:lottie/lottie.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+import '../login_data/login_api_provider.dart';
+
+class StartScreen extends StatefulWidget {
+  const StartScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<StartScreen> createState() => _StartScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen>
+class _StartScreenState extends State<StartScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
@@ -87,7 +95,6 @@ class _LoginScreenState extends State<LoginScreen>
                   size: Size(size.width, double.infinity),
                   painter: DiagonalBorderPainter(offset: 80),
                 ),
-
                 Container(
                   width: size.width * 1.5,
                   height: size.width * 1.5,
@@ -99,7 +106,6 @@ class _LoginScreenState extends State<LoginScreen>
                     ),
                   ),
                 ),
-
                 Container(
                   width: size.width * 0.82,
                   height: size.width * 0.82,
@@ -111,7 +117,6 @@ class _LoginScreenState extends State<LoginScreen>
                     ),
                   ),
                 ),
-
                 Container(
                   width: size.width * 0.62,
                   height: size.width * 0.62,
@@ -123,7 +128,6 @@ class _LoginScreenState extends State<LoginScreen>
                     ),
                   ),
                 ),
-
                 Positioned.fill(
                   child: AnimatedBuilder(
                     animation: _scaleAnimation,
@@ -133,16 +137,53 @@ class _LoginScreenState extends State<LoginScreen>
                         child: child,
                       );
                     },
-                    child: Lottie.asset(
-                      'asset/lotties/ExpenseTracker_Splash_Screen.json',
-                      fit: BoxFit.contain,
+                    child: Stack(
+                      alignment: Alignment.center,
+                      children: [
+                        Lottie.asset(
+                          'asset/lotties/ExpenseTracker_Splash_Screen.json',
+                          fit: BoxFit.contain,
+                        ),
+                        Positioned(
+                          bottom: 80,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 25,
+                              vertical: 10,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(50),
+                            ),
+                            child: Text(
+                              'Expenzo',
+                              style: TextStyle(
+                                fontSize: 60,
+                                fontWeight: FontWeight.w900,
+                                letterSpacing: 10,
+                                color: Color(0xFF174944),
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.black.withOpacity(0.35),
+                                    blurRadius: 12,
+                                    offset: const Offset(0, 4),
+                                  ),
+                                  Shadow(
+                                    color: Colors.tealAccent.withOpacity(0.15),
+                                    blurRadius: 20,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ],
             ),
           ),
-
           Expanded(
             flex: 40,
             child: FadeTransition(
@@ -159,38 +200,34 @@ class _LoginScreenState extends State<LoginScreen>
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 40,
-                          color: Color(0xFF438883),
+                          color: Color(0xFF174944),
                           height: 1.3,
                           fontWeight: FontWeight.w900,
                         ),
                       ),
 
                       const SizedBox(height: 36),
-
-                      SizedBox(
-                        width: double.infinity,
-                        height: 54,
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF4AAFA8),
-                            foregroundColor: Colors.white,
-                            elevation: 0,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(32),
-                            ),
-                          ),
-                          child: const Text(
-                            'Log In',
-                            style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.3,
-                            ),
-                          ),
-                        ),
-                      ),
-
+                      AppButton(
+                          text: "Get Started",
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => BlocProvider(
+                                  create: (_) => LoginBloc(
+                                    LoginRepo(
+                                      LoginApiProvider(),
+                                      SecureStorageService()
+                                    ),
+                                  ),
+                                  child: LoginPage(),
+                                ),
+                              ),
+                            );
+                          },
+                          height: 55,
+                          backgroundColor: const Color(0xFF174944),
+                          textColor: Colors.white),
                       const SizedBox(height: 20),
                     ],
                   ),
