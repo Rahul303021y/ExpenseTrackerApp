@@ -4,8 +4,13 @@ import 'package:flutter/material.dart';
 
 class HomeHeader extends StatelessWidget {
   final String userName;
+  final String greeting;
 
-  const HomeHeader({super.key, required this.userName});
+  const HomeHeader({
+    super.key,
+    required this.userName,
+    this.greeting = "Good Day",
+  });
 
   static const double height = 300;
 
@@ -38,18 +43,18 @@ class HomeHeader extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          const Text(
-                            "Good Afternoon,",
+                          Text(
+                            greeting,
                             style:
-                                TextStyle(color: Colors.white70, fontSize: 16),
+                                TextStyle(color: Colors.white70, fontSize: 14),
                           ),
-                          const SizedBox(height: 6),
                           Text(
                             userName,
                             style: const TextStyle(
                               color: Colors.white,
                               fontWeight: FontWeight.bold,
-                              fontSize: 30,
+                              fontSize: 22,
+                              letterSpacing: 2
                             ),
                           ),
                         ],

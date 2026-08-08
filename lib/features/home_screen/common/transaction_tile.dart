@@ -34,9 +34,9 @@ class TransactionTile extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 18)),
+              Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
               const SizedBox(height: 2),
-              Text(subtitle, style: TextStyle(color: Colors.grey.shade600, fontSize: 14)),
+              Text(subtitle, style: TextStyle(color: Colors.grey.shade600, fontSize: 11)),
             ],
           ),
         ),
@@ -44,7 +44,7 @@ class TransactionTile extends StatelessWidget {
           "${isIncome ? '+' : '-'} \$${amount.toStringAsFixed(2)}",
           style: TextStyle(
             fontWeight: FontWeight.w700,
-            fontSize: 22,
+            fontSize: 16,
             color: isIncome ? Colors.green : Colors.redAccent,
           ),
         ),

@@ -28,7 +28,7 @@ class TransactionList extends StatelessWidget {
             children: [
               const Text(
                 "Transactions History",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
               TextButton(
                 onPressed: () {

@@ -45,10 +45,9 @@ class BalanceCard extends StatelessWidget {
               const Icon(Icons.more_horiz, color: Colors.white70),
             ],
           ),
-          const SizedBox(height: 8),
           Text(
             "\$ ${totalBalance.toStringAsFixed(2)}",
-            style: const TextStyle(color: Colors.white, fontSize: 40, fontWeight: FontWeight.bold),
+            style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
           ),
           const Spacer(),
           Row(
@@ -84,7 +83,7 @@ class _StatChip extends StatelessWidget {
                   child: Icon(icon, size: 14, color: Colors.white,),
                 ),
                 SizedBox(width: 8,),
-                Text(label, style: const TextStyle(color: Colors.white70, fontSize: 18)),
+                Text(label, style: const TextStyle(color: Colors.white70, fontSize: 13)),
           ],
         ),
            Row(
@@ -92,7 +91,7 @@ class _StatChip extends StatelessWidget {
                SizedBox(width: 30,),
                Text(
                  "\$ ${amount.toStringAsFixed(2)}",
-                 style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 22),
+                 style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
                ),
              ],
            )

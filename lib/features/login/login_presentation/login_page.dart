@@ -1,4 +1,6 @@
 import 'package:expensetrackerapp/core/helpers/device_info_helpers.dart';
+import 'package:expensetrackerapp/core/storage/secure_storage_service.dart';
+import 'package:expensetrackerapp/features/home_screen/home_screen_bloc/home_screen_event.dart';
 import 'package:expensetrackerapp/features/home_screen/home_screen_presentation/home_screen.dart';
 import 'package:expensetrackerapp/features/login/login_bloc/login_bloc.dart';
 import 'package:expensetrackerapp/features/login/login_bloc/login_event.dart';
@@ -10,6 +12,11 @@ import 'package:expensetrackerapp/shared/utils/custom_snackbar.dart';
 import 'package:expensetrackerapp/shared/utils/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../core/network/dio_client.dart';
+import '../../home_screen/home_screen_bloc/home_screen_bloc.dart';
+import '../../home_screen/home_screen_data/home_screen_api_provider.dart';
+import '../../home_screen/home_screen_data/home_screen_repo.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -43,8 +50,12 @@ class _LoginPageState extends State<LoginPage> {
               deviceName: "Demo"),
         );
   }
+
   @override
   Widget build(BuildContext context) {
+    final repository = HomeScreenRepo(
+      HomeScreenApiProvider(DioClient(SecureStorageService()).dio),
+    );
     return Scaffold(
       body: BlocConsumer<LoginBloc, LoginState>(
         listener: (context, state) {
@@ -52,7 +63,11 @@ class _LoginPageState extends State<LoginPage> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (_) => const HomeScreen(),
+                builder: (_) => BlocProvider(
+                  create: (_) =>
+                      HomeBloc(repository: repository)..add(HomeStarted()),
+                  child: const HomeScreen(),
+                ),
               ),
             );
           }
@@ -97,6 +112,8 @@ class _LoginPageState extends State<LoginPage> {
                       CustomTextField(
                         controller: emailController,
                         hintText: "Enter your Email Address",
+                        textColor: Colors.white,
+                        borderColor: Colors.white.withOpacity(0.4),
                       ),
                       const SizedBox(height: 25),
                       const Text(
@@ -110,6 +127,8 @@ class _LoginPageState extends State<LoginPage> {
                       CustomTextField(
                         controller: passwordController,
                         hintText: "Enter your Password",
+                        textColor: Colors.white,
+                        borderColor: Colors.white.withOpacity(0.4),
                         obscureText: _obscurePassword,
                         suffixIcon: _obscurePassword
                             ? Icons.visibility_off_outlined
@@ -139,7 +158,8 @@ class _LoginPageState extends State<LoginPage> {
                         alignment: Alignment.centerRight,
                         child: TextButton(
                           onPressed: () {
-                            CustomSnackbar.info(context, "🔐 Password recovery coming soon!");
+                            CustomSnackbar.info(
+                                context, "🔐 Password recovery coming soon!");
                           },
                           child: const Text(
                             "Forgot Password?",

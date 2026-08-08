@@ -4,8 +4,15 @@ import 'package:expensetrackerapp/features/home_screen/common/main_screen.dart';
 import 'package:expensetrackerapp/features/login/login_data/login_api_provider.dart';
 import 'package:expensetrackerapp/features/login/login_presentation/start_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:lottie/lottie.dart';
+
+import '../../../core/network/dio_client.dart';
+import '../../home_screen/home_screen_bloc/home_screen_bloc.dart';
+import '../../home_screen/home_screen_bloc/home_screen_event.dart';
+import '../../home_screen/home_screen_data/home_screen_api_provider.dart';
+import '../../home_screen/home_screen_data/home_screen_repo.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,11 +25,20 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _scaleAnimation;
+  final repository = HomeScreenRepo(
+      HomeScreenApiProvider(DioClient(SecureStorageService()).dio));
 
   void _goToHome() {
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (_) => const MainScreen()),
+      MaterialPageRoute(
+        builder: (_) => BlocProvider(
+          create: (_) => HomeBloc(
+            repository: repository,
+          )..add(HomeStarted()),
+          child: const MainScreen(),
+        ),
+      ),
     );
   }
 
@@ -82,6 +98,7 @@ class _SplashScreenState extends State<SplashScreen>
       _goToLogin();
     }
   }
+
   @override
   void initState() {
     super.initState();
@@ -105,6 +122,7 @@ class _SplashScreenState extends State<SplashScreen>
       _navigate();
     });
   }
+
   @override
   void dispose() {
     _controller.dispose();

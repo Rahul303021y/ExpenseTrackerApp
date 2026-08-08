@@ -1,6 +1,13 @@
+import 'package:expensetrackerapp/core/storage/secure_storage_service.dart';
 import 'package:expensetrackerapp/features/add_expense/add_expense_presentation/add_expense_screen.dart';
 import 'package:expensetrackerapp/features/home_screen/home_screen_presentation/home_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import '../../../core/network/dio_client.dart';
+import '../../add_expense/add_expense_bloc/add_expense_bloc.dart';
+import '../../add_expense/add_expense_data/add_expense_api_provider.dart';
+import '../../add_expense/add_expense_data/add_expense_repo.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -12,13 +19,31 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
-  final List<Widget> _screens = [
-    const HomeScreen(),
-    const Placeholder(),
-    const Placeholder(),
-    const Placeholder(),
-    const AddExpenseScreen(),
-  ];
+
+  late final List<Widget> _screens;
+
+  @override
+  void initState() {
+    super.initState();
+    _screens = [
+      const HomeScreen(),
+      const Placeholder(),
+      const Placeholder(),
+      const Placeholder(),
+      BlocProvider(
+        create: (_) => AddExpenseBloc(
+          AddExpenseRepo(
+            AddExpenseApiProvider(
+              DioClient(SecureStorageService()).dio,
+            ),
+          ),
+        ),
+        child: AddExpenseScreen(
+          onSubmitSuccess: () => _onTabTapped(0),
+        ),
+      ),
+    ];
+  }
 
   void _onTabTapped(int index) {
     setState(() => _currentIndex = index);
@@ -41,11 +66,11 @@ class _MainScreenState extends State<MainScreen> {
         floatingActionButton: _currentIndex == 4
             ? null
             : FloatingActionButton(
-          onPressed: () => _onTabTapped(4),
-          backgroundColor: const Color(0xFF0F6E56),
-          shape: const CircleBorder(),
-          child: const Icon(Icons.add, color: Colors.white, size: 40),
-        ),
+                onPressed: () => _onTabTapped(4),
+                backgroundColor: const Color(0xFF0F6E56),
+                shape: const CircleBorder(),
+                child: const Icon(Icons.add, color: Colors.white, size: 40),
+              ),
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -73,7 +98,9 @@ class _MainScreenState extends State<MainScreen> {
                   isSelected: _currentIndex == 1,
                   onTap: () => _onTabTapped(1),
                 ),
-                SizedBox(width: 15,),
+                SizedBox(
+                  width: 15,
+                ),
                 _NavItem(
                   icon: Icons.account_balance_wallet_outlined,
                   isSelected: _currentIndex == 2,
@@ -88,7 +115,7 @@ class _MainScreenState extends State<MainScreen> {
             ),
           ),
         ),
-      ), 
+      ),
     );
   }
 }
