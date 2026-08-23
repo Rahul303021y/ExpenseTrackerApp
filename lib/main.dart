@@ -15,6 +15,17 @@ class MyApp extends StatelessWidget {
         fontFamily: 'Inter',
       ),
       debugShowCheckedModeBanner: false,
+        builder: (context, child) {
+          final mediaQuery = MediaQuery.of(context);
+          return MediaQuery(
+            data: mediaQuery.copyWith(
+              highContrast: false,
+              boldText: false,
+              textScaler: TextScaler.noScaling,
+            ),
+            child: child!,
+          );
+        },
       home: SplashScreen(),
     );
   }

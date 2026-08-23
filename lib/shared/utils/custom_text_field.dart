@@ -6,6 +6,9 @@ class CustomTextField extends StatelessWidget {
   final IconData? suffixIcon;
   final VoidCallback? onSuffixIconPressed;
   final TextEditingController controller;
+  final Color borderColor;
+  final int? maxLines;
+  final Color textColor;
 
   const CustomTextField({
     super.key,
@@ -14,6 +17,9 @@ class CustomTextField extends StatelessWidget {
     this.suffixIcon,
     this.onSuffixIconPressed,
     required this.controller,
+    required this.borderColor,
+    this.maxLines = 1,
+    required this.textColor,
   });
 
   @override
@@ -21,13 +27,14 @@ class CustomTextField extends StatelessWidget {
     return TextField(
       controller: controller,
       obscureText: obscureText,
-      style: const TextStyle(
-        color: Colors.white,
+      maxLines: maxLines,
+      style: TextStyle(
+        color: textColor,
       ),
       decoration: InputDecoration(
         hintText: hintText,
-        hintStyle: const TextStyle(
-          color: Colors.white54,
+        hintStyle: TextStyle(
+          color: textColor,
         ),
 
         suffixIcon: suffixIcon != null
@@ -45,20 +52,20 @@ class CustomTextField extends StatelessWidget {
 
         contentPadding: const EdgeInsets.symmetric(
           horizontal: 20,
-          vertical: 18,
+          vertical: 10,
         ),
 
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(
-            color: Colors.white.withOpacity(0.4),
+            color: Colors.grey.shade300,
           ),
         ),
 
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
-          borderSide: const BorderSide(
-            color: Colors.white,
+          borderSide: BorderSide(
+            color: borderColor,
             width: 1.5,
           ),
         ),

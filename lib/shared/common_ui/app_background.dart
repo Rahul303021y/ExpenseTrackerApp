@@ -40,7 +40,12 @@ class AppBackground extends StatelessWidget {
             left: 120,
             child: BackgroundRing(size: 130),
           ),
-          child,
+          Positioned(
+            top: 0,
+            left: 0,
+            right: 0,
+            child: child,
+          ),
         ],
       ),
     );
