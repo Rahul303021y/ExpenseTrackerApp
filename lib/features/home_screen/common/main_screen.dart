@@ -1,13 +1,26 @@
+/*
+ * _______________________________
+ * Created By: Rahul Kumar
+ * Created At: 23-08-2026 - 12:30
+ * Product Name: Expenzo
+ * ________________________________
+ */
+
+import 'package:expensetrackerapp/core/network/dio_client.dart';
 import 'package:expensetrackerapp/core/storage/secure_storage_service.dart';
+import 'package:expensetrackerapp/features/add_expense/add_expense_bloc/add_expense_bloc.dart';
+import 'package:expensetrackerapp/features/add_expense/add_expense_data/add_expense_api_provider.dart';
+import 'package:expensetrackerapp/features/add_expense/add_expense_data/add_expense_repo.dart';
 import 'package:expensetrackerapp/features/add_expense/add_expense_presentation/add_expense_screen.dart';
+import 'package:expensetrackerapp/features/home_screen/home_screen_bloc/home_screen_bloc.dart';
+import 'package:expensetrackerapp/features/home_screen/home_screen_bloc/home_screen_event.dart';
+import 'package:expensetrackerapp/features/home_screen/home_screen_data/home_screen_api_provider.dart';
+import 'package:expensetrackerapp/features/home_screen/home_screen_data/home_screen_repo.dart';
+import 'package:expensetrackerapp/features/home_screen/home_screen_model/expense_model.dart';
 import 'package:expensetrackerapp/features/home_screen/home_screen_presentation/home_screen.dart';
+import 'package:expensetrackerapp/features/home_screen/home_screen_presentation/transaction_details_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import '../../../core/network/dio_client.dart';
-import '../../add_expense/add_expense_bloc/add_expense_bloc.dart';
-import '../../add_expense/add_expense_data/add_expense_api_provider.dart';
-import '../../add_expense/add_expense_data/add_expense_repo.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -19,14 +32,31 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
+  Expense? _selectedExpense;
 
   late final List<Widget> _screens;
 
   @override
   void initState() {
     super.initState();
+
+    final homeScreenRepo = HomeScreenRepo(
+      HomeScreenApiProvider(
+        DioClient(
+          SecureStorageService(),
+        ).dio,
+      ),
+    );
+
     _screens = [
-      const HomeScreen(),
+      BlocProvider(
+        create: (_) => HomeBloc(
+          repository: homeScreenRepo,
+        )..add(HomeStarted()),
+        child: HomeScreen(
+          onTransactionTap: _openTransactionDetails,
+        ),
+      ),
       const Placeholder(),
       const Placeholder(),
       const Placeholder(),
@@ -34,7 +64,9 @@ class _MainScreenState extends State<MainScreen> {
         create: (_) => AddExpenseBloc(
           AddExpenseRepo(
             AddExpenseApiProvider(
-              DioClient(SecureStorageService()).dio,
+              DioClient(
+                SecureStorageService(),
+              ).dio,
             ),
           ),
         ),
@@ -45,32 +77,70 @@ class _MainScreenState extends State<MainScreen> {
     ];
   }
 
+  void _openTransactionDetails(Expense expense) {
+    setState(() {
+      _selectedExpense = expense;
+    });
+  }
+
+  void _closeTransactionDetails() {
+    setState(() {
+      _selectedExpense = null;
+    });
+  }
+
   void _onTabTapped(int index) {
-    setState(() => _currentIndex = index);
+    setState(() {
+      _selectedExpense = null;
+      _currentIndex = index;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final bool isTransactionDetails = _selectedExpense != null;
+
     return PopScope(
-      canPop: _currentIndex == 0,
+      canPop: !isTransactionDetails && _currentIndex == 0,
       onPopInvokedWithResult: (didPop, result) {
-        if (!didPop) _onTabTapped(0);
+        if (!didPop) {
+          if (isTransactionDetails) {
+            _closeTransactionDetails();
+          } else {
+            _onTabTapped(0);
+          }
+        }
       },
       child: Scaffold(
-        body: IndexedStack(
+        backgroundColor: Colors.white,
+
+        body: isTransactionDetails
+            ? TransactionDetailsScreen(
+          expense: _selectedExpense!,
+          onBack: _closeTransactionDetails,
+        )
+            : IndexedStack(
           index: _currentIndex,
           children: _screens,
         ),
-        backgroundColor: Colors.white,
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
-        floatingActionButton: _currentIndex == 4
+
+        floatingActionButtonLocation:
+        FloatingActionButtonLocation.centerDocked,
+
+        floatingActionButton:
+        isTransactionDetails || _currentIndex == 4
             ? null
             : FloatingActionButton(
-                onPressed: () => _onTabTapped(4),
-                backgroundColor: const Color(0xFF0F6E56),
-                shape: const CircleBorder(),
-                child: const Icon(Icons.add, color: Colors.white, size: 40),
-              ),
+          onPressed: () => _onTabTapped(4),
+          backgroundColor: const Color(0xFF0F6E56),
+          shape: const CircleBorder(),
+          child: const Icon(
+            Icons.add,
+            color: Colors.white,
+            size: 40,
+          ),
+        ),
+
         bottomNavigationBar: Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -98,7 +168,7 @@ class _MainScreenState extends State<MainScreen> {
                   isSelected: _currentIndex == 1,
                   onTap: () => _onTabTapped(1),
                 ),
-                SizedBox(
+                const SizedBox(
                   width: 15,
                 ),
                 _NavItem(
@@ -136,7 +206,9 @@ class _NavItem extends StatelessWidget {
     return IconButton(
       icon: Icon(
         icon,
-        color: isSelected ? const Color(0xFF0F6E56) : Colors.grey,
+        color: isSelected
+            ? const Color(0xFF0F6E56)
+            : Colors.grey,
       ),
       onPressed: onTap,
     );

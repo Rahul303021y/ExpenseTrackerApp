@@ -11,7 +11,6 @@ class Expense {
   final DateTime? updatedDate;
   final String paymentMode;
   final int transactionType;
-  final String? invoiceUuid;
 
   Expense({
     required this.expenseId,
@@ -26,7 +25,6 @@ class Expense {
     this.updatedDate,
     required this.paymentMode,
     required this.transactionType,
-    this.invoiceUuid,
   });
 
   factory Expense.fromJson(Map<String, dynamic> json) {
@@ -45,7 +43,6 @@ class Expense {
           : null,
       paymentMode: json['paymentMode'],
       transactionType: json['transactionType'],
-      invoiceUuid: json['invoiceUuid'],
     );
   }
 }

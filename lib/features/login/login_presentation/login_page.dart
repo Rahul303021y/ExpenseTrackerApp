@@ -1,10 +1,4 @@
 import 'package:expensetrackerapp/core/helpers/device_info_helpers.dart';
-import 'package:expensetrackerapp/core/storage/secure_storage_service.dart';
-import 'package:expensetrackerapp/features/home_screen/home_screen_bloc/home_screen_event.dart';
-import 'package:expensetrackerapp/features/home_screen/home_screen_presentation/home_screen.dart';
-import 'package:expensetrackerapp/features/login/login_bloc/login_bloc.dart';
-import 'package:expensetrackerapp/features/login/login_bloc/login_event.dart';
-import 'package:expensetrackerapp/features/login/login_bloc/login_state.dart';
 import 'package:expensetrackerapp/shared/common_ui/app_background.dart';
 import 'package:expensetrackerapp/shared/common_ui/app_button.dart';
 import 'package:expensetrackerapp/shared/common_ui/app_logo_text.dart';
@@ -13,10 +7,10 @@ import 'package:expensetrackerapp/shared/utils/custom_text_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../core/network/dio_client.dart';
-import '../../home_screen/home_screen_bloc/home_screen_bloc.dart';
-import '../../home_screen/home_screen_data/home_screen_api_provider.dart';
-import '../../home_screen/home_screen_data/home_screen_repo.dart';
+import '../../home_screen/common/main_screen.dart';
+import '../login_bloc/login_bloc.dart';
+import '../login_bloc/login_event.dart';
+import '../login_bloc/login_state.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -28,6 +22,7 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+
   bool _obscurePassword = true;
 
   @override
@@ -38,24 +33,25 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   Future<void> _login() async {
-    final deviceInfo = await DeviceInfoHelper.getDeviceInfo();
+    final deviceInfo =
+    await DeviceInfoHelper.getDeviceInfo();
+
     if (!mounted) return;
+
     context.read<LoginBloc>().add(
-          LoginButtonPressedEvent(
-              email: emailController.text.trim(),
-              password: passwordController.text.trim(),
-              // deviceId: deviceInfo['deviceId'] ?? '',
-              // deviceName: deviceInfo['deviceName'] ?? '',
-              deviceId: "Demo",
-              deviceName: "Demo"),
-        );
+      LoginButtonPressedEvent(
+        email: emailController.text.trim(),
+        password: passwordController.text.trim(),
+        // deviceId: deviceInfo['deviceId'] ?? '',
+        // deviceName: deviceInfo['deviceName'] ?? '',
+        deviceId: "Demo",
+        deviceName: "Demo",
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
-    final repository = HomeScreenRepo(
-      HomeScreenApiProvider(DioClient(SecureStorageService()).dio),
-    );
     return Scaffold(
       body: BlocConsumer<LoginBloc, LoginState>(
         listener: (context, state) {
@@ -63,17 +59,16 @@ class _LoginPageState extends State<LoginPage> {
             Navigator.pushReplacement(
               context,
               MaterialPageRoute(
-                builder: (_) => BlocProvider(
-                  create: (_) =>
-                      HomeBloc(repository: repository)..add(HomeStarted()),
-                  child: const HomeScreen(),
-                ),
+                builder: (_) => const MainScreen(),
               ),
             );
           }
 
           if (state is LoginFailure) {
-            CustomSnackbar.error(context, "Login Failed");
+            CustomSnackbar.error(
+              context,
+              "Login Failed",
+            );
           }
         },
         builder: (context, state) {
@@ -86,11 +81,15 @@ class _LoginPageState extends State<LoginPage> {
                     vertical: 10,
                   ),
                   child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment:
+                    CrossAxisAlignment.start,
+                    mainAxisAlignment:
+                    MainAxisAlignment.center,
                     children: [
                       const AppLogoText(),
+
                       const SizedBox(height: 70),
+
                       const Text(
                         "LOGIN",
                         style: TextStyle(
@@ -100,7 +99,9 @@ class _LoginPageState extends State<LoginPage> {
                           letterSpacing: 1.5,
                         ),
                       ),
+
                       const SizedBox(height: 30),
+
                       const Text(
                         "Email Address",
                         style: TextStyle(
@@ -108,14 +109,20 @@ class _LoginPageState extends State<LoginPage> {
                           fontSize: 16,
                         ),
                       ),
+
                       const SizedBox(height: 10),
+
                       CustomTextField(
                         controller: emailController,
-                        hintText: "Enter your Email Address",
+                        hintText:
+                        "Enter your Email Address",
                         textColor: Colors.white,
-                        borderColor: Colors.white.withOpacity(0.4),
+                        borderColor:
+                        Colors.white.withOpacity(0.4),
                       ),
+
                       const SizedBox(height: 25),
+
                       const Text(
                         "Password",
                         style: TextStyle(
@@ -123,43 +130,62 @@ class _LoginPageState extends State<LoginPage> {
                           fontSize: 16,
                         ),
                       ),
+
                       const SizedBox(height: 10),
+
                       CustomTextField(
                         controller: passwordController,
-                        hintText: "Enter your Password",
+                        hintText:
+                        "Enter your Password",
                         textColor: Colors.white,
-                        borderColor: Colors.white.withOpacity(0.4),
-                        obscureText: _obscurePassword,
-                        suffixIcon: _obscurePassword
-                            ? Icons.visibility_off_outlined
-                            : Icons.visibility_outlined,
+                        borderColor:
+                        Colors.white.withOpacity(0.4),
+                        obscureText:
+                        _obscurePassword,
+                        suffixIcon:
+                        _obscurePassword
+                            ? Icons
+                            .visibility_off_outlined
+                            : Icons
+                            .visibility_outlined,
                         onSuffixIconPressed: () {
                           setState(() {
-                            _obscurePassword = !_obscurePassword;
+                            _obscurePassword =
+                            !_obscurePassword;
                           });
                         },
                       ),
+
                       const SizedBox(height: 40),
+
                       state is LoginLoading
                           ? const Center(
-                              child: CircularProgressIndicator(
-                                color: Colors.white,
-                              ),
-                            )
+                        child:
+                        CircularProgressIndicator(
+                          color: Colors.white,
+                        ),
+                      )
                           : AppButton(
-                              textColor: const Color(0xFF174944),
-                              backgroundColor: Colors.white,
-                              height: 60,
-                              text: "LOGIN",
-                              onPressed: _login,
-                            ),
+                        textColor:
+                        const Color(0xFF174944),
+                        backgroundColor:
+                        Colors.white,
+                        height: 60,
+                        text: "LOGIN",
+                        onPressed: _login,
+                      ),
+
                       const SizedBox(height: 18),
+
                       Align(
-                        alignment: Alignment.centerRight,
+                        alignment:
+                        Alignment.centerRight,
                         child: TextButton(
                           onPressed: () {
                             CustomSnackbar.info(
-                                context, "🔐 Password recovery coming soon!");
+                              context,
+                              "🔐 Password recovery coming soon!",
+                            );
                           },
                           child: const Text(
                             "Forgot Password?",

@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
 class BuildSubmitButton extends StatelessWidget {
-  final String? selectedCategory;
-  final TextEditingController amountController;
-  final DateTime selectedDate;
+  final String text;
   final VoidCallback onPressed;
+  final Color? buttonColor;
+  final Color? textColor;
 
   const BuildSubmitButton({
     super.key,
-    required this.selectedCategory,
-    required this.amountController,
-    required this.selectedDate,
+    this.text = "Add Expense",
     required this.onPressed,
+    this.buttonColor,
+    this.textColor,
   });
 
   @override
@@ -22,13 +22,13 @@ class BuildSubmitButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color(0xFF1F6E68),
+          backgroundColor: buttonColor ?? const Color(0xFF1F6E68),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           elevation: 0,
         ),
-        child: const Text(
-          "Add Expense",
-          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+        child: Text(
+          text,
+          style: TextStyle(color: textColor ?? Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
     );

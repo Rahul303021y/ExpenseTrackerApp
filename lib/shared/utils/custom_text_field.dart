@@ -18,7 +18,7 @@ class CustomTextField extends StatelessWidget {
     this.onSuffixIconPressed,
     required this.controller,
     required this.borderColor,
-    this.maxLines,
+    this.maxLines = 1,
     required this.textColor,
   });
 

@@ -4,7 +4,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import 'home_screen_state.dart';
 
-
 class HomeBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
   final HomeScreenRepo repository;
 
@@ -21,12 +20,23 @@ class HomeBloc extends Bloc<HomeScreenEvent, HomeScreenState> {
     emit(HomeScreenLoading());
 
     try {
-      final response = await repository.getExpenses();
+      final expenseFuture = repository.getExpenses();
+      final summaryFuture = repository.fetchAccountSummary();
 
-      if (response.status) {
-        emit(HomeScreenLoaded(response.data.expenseList));
+      final expenseResponse = await expenseFuture;
+      final summaryResponse = await summaryFuture;
+
+      if (expenseResponse.status && summaryResponse.status) {
+        emit(HomeScreenLoaded(
+          expenseResponse.data.expenseList,
+          summaryResponse.data,
+        ));
       } else {
-        emit(HomeScreenError(response.developerMessage));
+        emit(HomeScreenError(
+          !expenseResponse.status
+              ? expenseResponse.developerMessage
+              : summaryResponse.developerMessage,
+        ));
       }
     } catch (e) {
       emit(HomeScreenError(e.toString()));

@@ -8,7 +8,7 @@ class CommonHeader extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(20, 30, 20, 0),
+        padding: const EdgeInsets.fromLTRB(20, 15, 20, 0),
         child: Row(
           children: [
             IconButton(
@@ -25,7 +25,7 @@ class CommonHeader extends StatelessWidget {
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     color: Colors.white,
-                    fontSize: 25,
+                    fontSize: 20,
                     fontWeight: FontWeight.bold),
               ),
             ),
