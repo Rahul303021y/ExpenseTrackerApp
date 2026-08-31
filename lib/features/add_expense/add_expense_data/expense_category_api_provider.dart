@@ -7,6 +7,7 @@
  */
 
 import 'package:dio/dio.dart';
+import 'package:expensetrackerapp/core/app_constants.dart';
 
 class ExpenseCategoryApiProvider {
   ExpenseCategoryApiProvider(this.dio);
@@ -14,6 +15,6 @@ class ExpenseCategoryApiProvider {
   final Dio dio;
 
   Future<Response> getExpenseCategories() {
-    return dio.get('/expense-category');
+    return dio.get(AppConstants.getExpenseCategoriesUrl);
   }
 }

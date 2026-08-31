@@ -1,3 +1,4 @@
+import 'package:expensetrackerapp/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class TransactionTile extends StatelessWidget {
@@ -8,7 +9,7 @@ class TransactionTile extends StatelessWidget {
     required this.amount,
     required this.isIncome,
     required this.icon,
-    this.onTap
+    this.onTap,
   });
 
   final String title;
@@ -20,6 +21,7 @@ class TransactionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
     return InkWell(
       onTap: onTap,
       child: Row(
@@ -28,19 +30,29 @@ class TransactionTile extends StatelessWidget {
             height: 45,
             width: 45,
             decoration: BoxDecoration(
-              color: Colors.grey.shade100,
+              color: Theme.of(context).appColors.onSurfaceVariant.withOpacity(0.12),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: Icon(icon, color: Colors.black87),
+            child: Icon(icon, color: Theme.of(context).appColors.onSurfaceVariant),
           ),
           const SizedBox(width: 14),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 15)),
+                Text(
+                  title,
+                  style: TextStyle(
+                    color: Theme.of(context).appColors.textPrimary,
+                    fontWeight: FontWeight.w600,
+                    fontSize: 15,
+                  ),
+                ),
                 const SizedBox(height: 2),
-                Text(subtitle, style: TextStyle(color: Colors.grey.shade600, fontSize: 11)),
+                Text(
+                  subtitle,
+                  style: TextStyle(color: Theme.of(context).appColors.textSecondary, fontSize: 11),
+                ),
               ],
             ),
           ),
@@ -49,7 +61,7 @@ class TransactionTile extends StatelessWidget {
             style: TextStyle(
               fontWeight: FontWeight.w700,
               fontSize: 16,
-              color: isIncome ? Colors.green : Colors.redAccent,
+              color: isIncome ? Theme.of(context).appColors.income : Theme.of(context).appColors.expense,
             ),
           ),
         ],

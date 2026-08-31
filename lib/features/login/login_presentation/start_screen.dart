@@ -1,3 +1,4 @@
+import 'package:expensetrackerapp/core/localization/locale_keys.dart';
 import 'package:expensetrackerapp/core/storage/secure_storage_service.dart';
 import 'package:expensetrackerapp/features/login/login_bloc/login_bloc.dart';
 import 'package:expensetrackerapp/features/login/login_data/login_repo.dart';
@@ -57,8 +58,6 @@ class _StartScreenState extends State<StartScreen>
       parent: _controller,
       curve: const Interval(0.3, 1.0, curve: Curves.easeOut),
     ));
-
-    // 👇 wait for first frame to finish building then animate
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) _controller.forward();
     });
@@ -155,8 +154,7 @@ class _StartScreenState extends State<StartScreen>
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(50),
                             ),
-                            child: Text(
-                              'Expenzo',
+                            child: Text(LocaleKeys.appName.tr(context),
                               style: TextStyle(
                                 fontSize: 60,
                                 fontWeight: FontWeight.w900,
@@ -195,8 +193,7 @@ class _StartScreenState extends State<StartScreen>
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const Text(
-                        'Spend Smarter\nSave More',
+                      Text(LocaleKeys.quote.tr(context),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 40,
@@ -208,7 +205,7 @@ class _StartScreenState extends State<StartScreen>
 
                       const SizedBox(height: 36),
                       AppButton(
-                          text: "Get Started",
+                          text: LocaleKeys.getStarted.tr(context),
                           onPressed: () {
                             Navigator.push(
                               context,

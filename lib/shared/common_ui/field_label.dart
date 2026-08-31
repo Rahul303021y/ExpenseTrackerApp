@@ -1,3 +1,4 @@
+import 'package:expensetrackerapp/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class FieldLabel extends StatelessWidget {
@@ -9,10 +10,10 @@ class FieldLabel extends StatelessWidget {
   Widget build(BuildContext context) {
     return Text(
       text,
-      style: const TextStyle(
+      style: TextStyle(
         fontSize: 12,
         fontWeight: FontWeight.w600,
-        color: Colors.black54,
+        color: Theme.of(context).appColors.textPrimary,
         letterSpacing: 0.5,
       ),
     );

@@ -1,3 +1,4 @@
+import 'package:expensetrackerapp/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class BuildSubmitButton extends StatelessWidget {
@@ -22,13 +23,13 @@ class BuildSubmitButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: onPressed,
         style: ElevatedButton.styleFrom(
-          backgroundColor: buttonColor ?? const Color(0xFF1F6E68),
+          backgroundColor: buttonColor ?? Theme.of(context).appColors.primary,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
           elevation: 0,
         ),
         child: Text(
           text,
-          style: TextStyle(color: textColor ?? Colors.white, fontSize: 16, fontWeight: FontWeight.w600),
+          style: TextStyle(color: textColor ?? Theme.of(context).appColors.onPrimary, fontSize: 16, fontWeight: FontWeight.w600),
         ),
       ),
     );

@@ -1,5 +1,5 @@
 import 'package:expensetrackerapp/core/storage/secure_storage_service.dart';
-import 'package:expensetrackerapp/core/theme.dart';
+import 'package:expensetrackerapp/core/theme/theme.dart';
 import 'package:expensetrackerapp/features/home_screen/common/main_screen.dart';
 import 'package:expensetrackerapp/features/login/login_data/login_api_provider.dart';
 import 'package:expensetrackerapp/features/login/login_presentation/start_screen.dart';

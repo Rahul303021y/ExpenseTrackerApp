@@ -1,3 +1,5 @@
+import 'package:expensetrackerapp/core/localization/locale_keys.dart';
+import 'package:expensetrackerapp/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class BalanceCard extends StatelessWidget {
@@ -22,11 +24,11 @@ class BalanceCard extends StatelessWidget {
       height: height,
       padding: const EdgeInsets.all(25),
       decoration: BoxDecoration(
-        color: const Color(0xFF2F6E5E),
+        color: Theme.of(context).appColors.primaryDark,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.15),
+            color: Theme.of(context).appColors.shadow,
             blurRadius: 12,
             offset: const Offset(0, 6),
           ),
@@ -38,13 +40,18 @@ class BalanceCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Row(
+              Row(
                 children: [
-                  Text("Available Balance", style: TextStyle(color: Colors.white70, fontSize: 16, fontWeight: FontWeight.bold)),
-                  Icon(Icons.keyboard_arrow_up, color: Colors.white70, size: 18),
+                  Text(LocaleKeys.availableBalance.tr(context),
+                      style: TextStyle(
+                          color: Theme.of(context).appColors.onPrimary.withOpacity(0.5),
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold)),
+                  Icon(Icons.keyboard_arrow_up,
+                      color: Theme.of(context).appColors.onPrimary.withOpacity(0.5), size: 18),
                 ],
               ),
-              const Icon(Icons.more_horiz, color: Colors.white70),
+              Icon(Icons.more_horiz, color: Theme.of(context).appColors.onPrimary.withOpacity(0.5)),
             ],
           ),
           const SizedBox(height: 6),
@@ -57,8 +64,11 @@ class BalanceCard extends StatelessWidget {
                   fit: BoxFit.scaleDown,
                   alignment: Alignment.centerLeft,
                   child: Text(
-                    "\$ ${totalBalance.toStringAsFixed(2)}",
-                    style: const TextStyle(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+                    "₹ ${totalBalance.toStringAsFixed(2)}",
+                    style: TextStyle(
+                        color: Theme.of(context).appColors.onPrimary,
+                        fontSize: 32,
+                        fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
@@ -69,15 +79,22 @@ class BalanceCard extends StatelessWidget {
                   Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Text("• ", style: TextStyle(color: Colors.white.withOpacity(0.4), fontSize: 12)),
+                      Text("• ",
+                          style: TextStyle(
+                              color: Theme.of(context).appColors.onPrimary.withOpacity(0.5),
+                              fontSize: 12)),
                       Text(
-                        "Initial",
-                        style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),
+                        LocaleKeys.initial.tr(context),
+                        style: TextStyle(
+                            color: Theme.of(context).appColors.onPrimary.withOpacity(0.5), fontSize: 12),
                       ),
                     ],
                   ),
-                  Text("\$${initialBalance.toStringAsFixed(2)}",
-                  style: TextStyle(color: Colors.white.withOpacity(0.5), fontSize: 12),),
+                  Text(
+                    "₹ ${initialBalance.toStringAsFixed(2)}",
+                    style: TextStyle(
+                        color: Theme.of(context).appColors.onPrimary.withOpacity(0.7), fontSize: 12),
+                  ),
                 ],
               ),
             ],
@@ -86,8 +103,12 @@ class BalanceCard extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _StatChip(icon: Icons.arrow_downward, label: "Income", amount: income),
-              _StatChip(icon: Icons.arrow_upward, label: "Expenses", amount: expenses),
+              _StatChip(
+                  icon: Icons.arrow_downward, label: LocaleKeys.income.tr(context), amount: income),
+              _StatChip(
+                  icon: Icons.arrow_upward,
+                  label: LocaleKeys.expense.tr(context),
+                  amount: expenses),
             ],
           ),
         ],
@@ -97,7 +118,8 @@ class BalanceCard extends StatelessWidget {
 }
 
 class _StatChip extends StatelessWidget {
-  const _StatChip({required this.icon, required this.label, required this.amount});
+  const _StatChip(
+      {required this.icon, required this.label, required this.amount});
 
   final IconData icon;
   final String label;
@@ -111,20 +133,24 @@ class _StatChip extends StatelessWidget {
         Row(
           children: [
             CircleAvatar(
-              radius: 16,
-              backgroundColor: Colors.white.withOpacity(.15),
-              child: Icon(icon, size: 14, color: Colors.white),
+              radius: 15,
+              backgroundColor: Theme.of(context).appColors.onPrimary.withOpacity(0.1),
+              child: Icon(icon, size: 14, color: Theme.of(context).appColors.onPrimary.withOpacity(0.5)),
             ),
             const SizedBox(width: 8),
-            Text(label, style: const TextStyle(color: Colors.white70, fontSize: 13)),
+            Text(label,
+                style: TextStyle(color: Theme.of(context).appColors.onPrimary.withOpacity(0.5), fontSize: 14)),
           ],
         ),
         Row(
           children: [
             const SizedBox(width: 30),
             Text(
-              "\$ ${amount.toStringAsFixed(2)}",
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 18),
+              "₹ ${amount.toStringAsFixed(2)}",
+              style: TextStyle(
+                  color: Theme.of(context).appColors.onPrimary,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18),
             ),
           ],
         ),

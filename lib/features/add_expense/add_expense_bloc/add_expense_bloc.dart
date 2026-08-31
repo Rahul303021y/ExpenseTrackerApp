@@ -9,6 +9,7 @@
 import 'package:expensetrackerapp/features/add_expense/add_expense_bloc/add_expense_event.dart';
 import 'package:expensetrackerapp/features/add_expense/add_expense_bloc/add_expense_state.dart';
 import 'package:expensetrackerapp/features/add_expense/add_expense_data/add_expense_repo.dart';
+import 'package:expensetrackerapp/features/add_expense/add_expense_model/add_expense_response_model.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class AddExpenseBloc extends Bloc<AddExpenseEvent, AddExpenseState> {
@@ -25,9 +26,12 @@ class AddExpenseBloc extends Bloc<AddExpenseEvent, AddExpenseState> {
     emit(AddExpenseLoading());
 
     try {
-      await repo.addExpense(event.request);
+      final result = await repo.addExpense(event.request);
 
-      emit(AddExpenseSuccess());
+      final responseData =
+      AddExpenseResponseModel.fromJson(result.data["data"]);
+
+      emit(AddExpenseSuccess(response: responseData));
     } catch (e) {
       emit(AddExpenseFailure(e.toString()));
     }
