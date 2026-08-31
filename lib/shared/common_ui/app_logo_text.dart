@@ -1,3 +1,4 @@
+import 'package:expensetrackerapp/core/localization/locale_keys.dart';
 import 'package:flutter/material.dart';
 
 class AppLogoText extends StatelessWidget{
@@ -7,7 +8,7 @@ class AppLogoText extends StatelessWidget{
   Widget build(BuildContext context) {
     return Center(
       child: Text(
-        "Expenzo",
+        LocaleKeys.appName.tr(context),
         style: TextStyle(
           color: Colors.white.withOpacity(0.92),
           fontSize: 55,

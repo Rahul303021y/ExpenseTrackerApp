@@ -8,6 +8,7 @@
 
 import 'package:expensetrackerapp/core/network/dio_client.dart';
 import 'package:expensetrackerapp/core/storage/secure_storage_service.dart';
+import 'package:expensetrackerapp/core/theme/app_theme.dart';
 import 'package:expensetrackerapp/features/add_expense/add_expense_bloc/add_expense_bloc.dart';
 import 'package:expensetrackerapp/features/add_expense/add_expense_data/add_expense_api_provider.dart';
 import 'package:expensetrackerapp/features/add_expense/add_expense_data/add_expense_repo.dart';
@@ -22,6 +23,9 @@ import 'package:expensetrackerapp/features/home_screen/home_screen_presentation/
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../home_screen_bloc/home_screen_state.dart';
+import '../home_screen_presentation/all_transaction_screen.dart';
+
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
 
@@ -32,9 +36,8 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
 
-  Expense? _selectedExpense;
-
   late final List<Widget> _screens;
+  late final HomeBloc _homeBloc;
 
   @override
   void initState() {
@@ -48,18 +51,23 @@ class _MainScreenState extends State<MainScreen> {
       ),
     );
 
+    _homeBloc = HomeBloc(
+      repository: homeScreenRepo,
+    )..add(HomeStarted());
+
     _screens = [
-      BlocProvider(
-        create: (_) => HomeBloc(
-          repository: homeScreenRepo,
-        )..add(HomeStarted()),
+      BlocProvider.value(
+        value: _homeBloc,
         child: HomeScreen(
           onTransactionTap: _openTransactionDetails,
+          onViewAllTransactions: _openAllTransactions,
         ),
       ),
+
       const Placeholder(),
       const Placeholder(),
       const Placeholder(),
+
       BlocProvider(
         create: (_) => AddExpenseBloc(
           AddExpenseRepo(
@@ -71,118 +79,122 @@ class _MainScreenState extends State<MainScreen> {
           ),
         ),
         child: AddExpenseScreen(
-          onSubmitSuccess: () => _onTabTapped(0),
+          onSubmitSuccess: () {
+            _homeBloc.add(HomeStarted());
+            _onTabTapped(0);
+          },
         ),
       ),
     ];
   }
 
-  void _openTransactionDetails(Expense expense) {
-    setState(() {
-      _selectedExpense = expense;
-    });
+  void _openAllTransactions() {
+    final state = _homeBloc.state;
+
+    if (state is HomeScreenLoaded) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (_) => AllTransactionsScreen(
+            transactions: state.expenses,
+            onTransactionTap: _openTransactionDetails,
+          ),
+        ),
+      );
+    }
   }
 
-  void _closeTransactionDetails() {
-    setState(() {
-      _selectedExpense = null;
-    });
+  void _openTransactionDetails(Expense expense) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => TransactionDetailsScreen(
+          expense: expense,
+        ),
+      ),
+    );
   }
 
   void _onTabTapped(int index) {
     setState(() {
-      _selectedExpense = null;
       _currentIndex = index;
     });
   }
 
   @override
+  void dispose() {
+    _homeBloc.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final bool isTransactionDetails = _selectedExpense != null;
+    return Scaffold(
+      backgroundColor: Theme.of(context).appColors.surfaceContainer,
+      body: IndexedStack(
+        index: _currentIndex,
+        children: _screens,
+      ),
 
-    return PopScope(
-      canPop: !isTransactionDetails && _currentIndex == 0,
-      onPopInvokedWithResult: (didPop, result) {
-        if (!didPop) {
-          if (isTransactionDetails) {
-            _closeTransactionDetails();
-          } else {
-            _onTabTapped(0);
-          }
-        }
-      },
-      child: Scaffold(
-        backgroundColor: Colors.white,
+      floatingActionButtonLocation:
+      FloatingActionButtonLocation.centerDocked,
 
-        body: isTransactionDetails
-            ? TransactionDetailsScreen(
-          expense: _selectedExpense!,
-          onBack: _closeTransactionDetails,
-        )
-            : IndexedStack(
-          index: _currentIndex,
-          children: _screens,
+      floatingActionButton: _currentIndex == 4
+          ? null
+          : FloatingActionButton(
+        onPressed: () => _onTabTapped(4),
+        backgroundColor: Theme.of(context).appColors.primary,
+        shape: const CircleBorder(),
+        child: Icon(
+          Icons.add,
+          color: Theme.of(context).appColors.onPrimary,
+          size: 40,
         ),
+      ),
 
-        floatingActionButtonLocation:
-        FloatingActionButtonLocation.centerDocked,
-
-        floatingActionButton:
-        isTransactionDetails || _currentIndex == 4
-            ? null
-            : FloatingActionButton(
-          onPressed: () => _onTabTapped(4),
-          backgroundColor: const Color(0xFF0F6E56),
-          shape: const CircleBorder(),
-          child: const Icon(
-            Icons.add,
-            color: Colors.white,
-            size: 40,
-          ),
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Theme.of(context).appColors.onPrimary,
+          boxShadow: [
+            BoxShadow(
+              color: Theme.of(context).appColors.shadow,
+              blurRadius: 12,
+              offset: const Offset(0, -4),
+            ),
+          ],
         ),
-
-        bottomNavigationBar: Container(
-          decoration: BoxDecoration(
-            color: Colors.white,
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.08),
-                blurRadius: 12,
-                offset: const Offset(0, -4),
+        child: BottomAppBar(
+          color: Theme.of(context).appColors.background,
+          elevation: 0,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _NavItem(
+                icon: Icons.home_filled,
+                isSelected: _currentIndex == 0,
+                onTap: () => _onTabTapped(0),
+              ),
+              _NavItem(
+                icon: Icons.call_split,
+                isSelected: _currentIndex == 1,
+                onTap: () => _onTabTapped(1),
+              ),
+              _currentIndex == 4 ? SizedBox(
+                width: 0,
+              ) : SizedBox(
+                width: 15,
+              ) ,
+              _NavItem(
+                icon: Icons.account_balance_wallet_outlined,
+                isSelected: _currentIndex == 2,
+                onTap: () => _onTabTapped(2),
+              ),
+              _NavItem(
+                icon: Icons.person_outline,
+                isSelected: _currentIndex == 3,
+                onTap: () => _onTabTapped(3),
               ),
             ],
-          ),
-          child: BottomAppBar(
-            color: Colors.white,
-            elevation: 0,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                _NavItem(
-                  icon: Icons.home_filled,
-                  isSelected: _currentIndex == 0,
-                  onTap: () => _onTabTapped(0),
-                ),
-                _NavItem(
-                  icon: Icons.call_split,
-                  isSelected: _currentIndex == 1,
-                  onTap: () => _onTabTapped(1),
-                ),
-                const SizedBox(
-                  width: 15,
-                ),
-                _NavItem(
-                  icon: Icons.account_balance_wallet_outlined,
-                  isSelected: _currentIndex == 2,
-                  onTap: () => _onTabTapped(2),
-                ),
-                _NavItem(
-                  icon: Icons.person_outline,
-                  isSelected: _currentIndex == 3,
-                  onTap: () => _onTabTapped(3),
-                ),
-              ],
-            ),
           ),
         ),
       ),
@@ -207,8 +219,8 @@ class _NavItem extends StatelessWidget {
       icon: Icon(
         icon,
         color: isSelected
-            ? const Color(0xFF0F6E56)
-            : Colors.grey,
+            ? Theme.of(context).appColors.primary
+            : Theme.of(context).appColors.onSurfaceVariant,
       ),
       onPressed: onTap,
     );

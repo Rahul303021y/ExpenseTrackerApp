@@ -7,11 +7,12 @@
  */
 
 import 'package:dio/dio.dart';
+import 'package:expensetrackerapp/core/app_constants.dart';
 
 class ExpenseTimeOfDayApiProvider{
   final Dio dio;
   ExpenseTimeOfDayApiProvider(this.dio);
   Future<Response> fetchAllTimeOfDay(){
-    return dio.get("/time-of-day");
+    return dio.get(AppConstants.getAllTimeOfDayUrl);
   }
 }

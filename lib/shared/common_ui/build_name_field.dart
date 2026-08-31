@@ -1,3 +1,4 @@
+import 'package:expensetrackerapp/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class BuildNameField extends StatelessWidget {
@@ -16,19 +17,40 @@ class BuildNameField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.grey.shade300),
-        borderRadius: BorderRadius.circular(12),
+    return DropdownButtonFormField<String>(
+      value: selectedCategory,
+      isExpanded: true,
+      items: dropdownItems,
+      onChanged: onChanged,
+      hint: Text(
+        hintText,
+        style: TextStyle(
+          color: Theme.of(context).appColors.textSecondary.withOpacity(0.5),
+        ),
       ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: selectedCategory,
-          isExpanded: true,
-          hint: Text(hintText),
-          items: dropdownItems,
-          onChanged: onChanged,
+      decoration: InputDecoration(
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 12,
+          vertical: 4,
+        ),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(
+            color: Theme.of(context).appColors.outline,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(
+            color: Theme.of(context).appColors.outline,
+          ),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(14),
+          borderSide: BorderSide(
+            color: Theme.of(context).appColors.primary,
+            width: 2,
+          ),
         ),
       ),
     );

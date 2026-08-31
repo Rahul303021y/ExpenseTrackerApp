@@ -1,3 +1,4 @@
+import 'package:expensetrackerapp/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class CustomTextField extends StatelessWidget {
@@ -9,6 +10,7 @@ class CustomTextField extends StatelessWidget {
   final Color borderColor;
   final int? maxLines;
   final Color textColor;
+  final bool readOnly;
 
   const CustomTextField({
     super.key,
@@ -20,6 +22,7 @@ class CustomTextField extends StatelessWidget {
     required this.borderColor,
     this.maxLines = 1,
     required this.textColor,
+    this.readOnly = false,
   });
 
   @override
@@ -28,13 +31,14 @@ class CustomTextField extends StatelessWidget {
       controller: controller,
       obscureText: obscureText,
       maxLines: maxLines,
+      readOnly: readOnly,
       style: TextStyle(
         color: textColor,
       ),
       decoration: InputDecoration(
         hintText: hintText,
         hintStyle: TextStyle(
-          color: textColor,
+          color: Theme.of(context).appColors.textSecondary.withOpacity(0.5),
         ),
 
         suffixIcon: suffixIcon != null
@@ -42,7 +46,7 @@ class CustomTextField extends StatelessWidget {
           onPressed: onSuffixIconPressed,
           icon: Icon(
             suffixIcon,
-            color: Colors.white70,
+            color: Theme.of(context).appColors.onSurfaceVariant,
           ),
         )
             : null,
@@ -58,7 +62,7 @@ class CustomTextField extends StatelessWidget {
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(14),
           borderSide: BorderSide(
-            color: Colors.grey.shade300,
+            color: Theme.of(context).appColors.outline,
           ),
         ),
 

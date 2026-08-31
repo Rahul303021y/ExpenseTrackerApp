@@ -13,7 +13,7 @@ class LoginApiProvider {
     required String deviceName,
   }) async {
     final response = await http.post(
-      Uri.parse('${AppConstants.baseUrl}/auth/login'),
+      Uri.parse('${AppConstants.baseUrl}${AppConstants.loginUrl}'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'email': email,
@@ -44,7 +44,7 @@ class LoginApiProvider {
     required String deviceId,
   }) async {
     final response = await http.post(
-      Uri.parse('${AppConstants.baseUrl}/auth/refresh-token'),
+      Uri.parse('${AppConstants.baseUrl}${AppConstants.refreshTokenUrl}'),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({
         'refreshToken': refreshToken,

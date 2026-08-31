@@ -1,15 +1,19 @@
+import 'package:expensetrackerapp/core/theme/app_theme.dart';
 import 'package:expensetrackerapp/shared/common_ui/app_background.dart';
 import 'package:expensetrackerapp/shared/utils/bottom_curve_clipper.dart';
+import 'package:expensetrackerapp/shared/utils/custom_snackbar.dart';
 import 'package:flutter/material.dart';
+
+import '../../../core/localization/locale_keys.dart';
 
 class HomeHeader extends StatelessWidget {
   final String userName;
-  final String greeting;
+  final String? greeting;
 
   const HomeHeader({
     super.key,
     required this.userName,
-    this.greeting = "Good Day",
+    this.greeting,
   });
 
   static const double height = 300;
@@ -34,24 +38,24 @@ class HomeHeader extends StatelessWidget {
                     children: [
                       CircleAvatar(
                           radius: 25,
-                          backgroundColor: Colors.white,
+                          backgroundColor: Theme.of(context).appColors.surface,
                           child: Icon(
                             Icons.person,
-                            color: Colors.black,
+                            color: Theme.of(context).appColors.onBackground,
                           )),
                       const SizedBox(width: 12),
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            greeting,
+                            greeting ?? LocaleKeys.goodDay.tr(context),
                             style:
-                                TextStyle(color: Colors.white70, fontSize: 14),
+                                TextStyle(color: Theme.of(context).appColors.onPrimary.withOpacity(0.7), fontSize: 14),
                           ),
                           Text(
                             userName,
-                            style: const TextStyle(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: Theme.of(context).appColors.onPrimary,
                               fontWeight: FontWeight.bold,
                               fontSize: 22,
                               letterSpacing: 2
@@ -67,13 +71,15 @@ class HomeHeader extends StatelessWidget {
                       height: 40,
                       width: 40,
                       decoration: BoxDecoration(
-                        color: Colors.white.withOpacity(.08),
+                        color: Theme.of(context).appColors.onSurfaceVariant.withOpacity(0.3),
                         borderRadius: BorderRadius.circular(14),
                       ),
                       child: IconButton(
-                        onPressed: () {},
-                        icon: const Icon(Icons.notifications_none_rounded,
-                            color: Colors.white),
+                        onPressed: () {
+                          CustomSnackbar.info(context, "Coming Soon!!");
+                        },
+                        icon: Icon(Icons.notifications_none_rounded,
+                            color: Theme.of(context).appColors.onPrimary),
                       ),
                     ),
                   ),

@@ -1,4 +1,5 @@
 import 'package:expensetrackerapp/core/helpers/device_info_helpers.dart';
+import 'package:expensetrackerapp/core/localization/locale_keys.dart';
 import 'package:expensetrackerapp/shared/common_ui/app_background.dart';
 import 'package:expensetrackerapp/shared/common_ui/app_button.dart';
 import 'package:expensetrackerapp/shared/common_ui/app_logo_text.dart';
@@ -67,7 +68,7 @@ class _LoginPageState extends State<LoginPage> {
           if (state is LoginFailure) {
             CustomSnackbar.error(
               context,
-              "Login Failed",
+              LocaleKeys.loginFailed.tr(context),
             );
           }
         },
@@ -87,11 +88,9 @@ class _LoginPageState extends State<LoginPage> {
                     MainAxisAlignment.center,
                     children: [
                       const AppLogoText(),
-
                       const SizedBox(height: 70),
-
-                      const Text(
-                        "LOGIN",
+                      Text(
+                        LocaleKeys.login.tr(context),
                         style: TextStyle(
                           color: Colors.white,
                           fontSize: 34,
@@ -99,11 +98,9 @@ class _LoginPageState extends State<LoginPage> {
                           letterSpacing: 1.5,
                         ),
                       ),
-
                       const SizedBox(height: 30),
-
-                      const Text(
-                        "Email Address",
+                      Text(
+                        LocaleKeys.emailAddress.tr(context),
                         style: TextStyle(
                           color: Colors.white70,
                           fontSize: 16,
@@ -115,7 +112,8 @@ class _LoginPageState extends State<LoginPage> {
                       CustomTextField(
                         controller: emailController,
                         hintText:
-                        "Enter your Email Address",
+                        LocaleKeys.enterYourEmailAddress.tr(context),
+                        readOnly: state is LoginLoading,
                         textColor: Colors.white,
                         borderColor:
                         Colors.white.withOpacity(0.4),
@@ -123,8 +121,7 @@ class _LoginPageState extends State<LoginPage> {
 
                       const SizedBox(height: 25),
 
-                      const Text(
-                        "Password",
+                      Text(LocaleKeys.password.tr(context),
                         style: TextStyle(
                           color: Colors.white70,
                           fontSize: 16,
@@ -135,9 +132,9 @@ class _LoginPageState extends State<LoginPage> {
 
                       CustomTextField(
                         controller: passwordController,
-                        hintText:
-                        "Enter your Password",
+                        hintText:LocaleKeys.enterYourPassword.tr(context),
                         textColor: Colors.white,
+                        readOnly: state is LoginLoading,
                         borderColor:
                         Colors.white.withOpacity(0.4),
                         obscureText:
@@ -171,7 +168,7 @@ class _LoginPageState extends State<LoginPage> {
                         backgroundColor:
                         Colors.white,
                         height: 60,
-                        text: "LOGIN",
+                        text: LocaleKeys.loginUpperCases.tr(context),
                         onPressed: _login,
                       ),
 
@@ -184,11 +181,11 @@ class _LoginPageState extends State<LoginPage> {
                           onPressed: () {
                             CustomSnackbar.info(
                               context,
-                              "🔐 Password recovery coming soon!",
+                              LocaleKeys.passwordRecoveryComingSoon.tr(context),
                             );
                           },
-                          child: const Text(
-                            "Forgot Password?",
+                          child: Text(
+                            LocaleKeys.forgotPassword.tr(context),
                             style: TextStyle(
                               color: Colors.white70,
                               fontSize: 16,

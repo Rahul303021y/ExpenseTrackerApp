@@ -7,11 +7,12 @@
  */
 
 import 'package:dio/dio.dart';
+import 'package:expensetrackerapp/core/app_constants.dart';
 
 class ExpensePaymentTypeApiProvider{
   final Dio dio;
   ExpensePaymentTypeApiProvider(this.dio);
   Future<Response> getExpensePaymentType(){
-    return dio.get("/payment-type");
+    return dio.get(AppConstants.getExpensePaymentTypeUrl);
   }
 }

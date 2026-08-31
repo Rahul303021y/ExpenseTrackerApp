@@ -1,6 +1,13 @@
+import 'package:expensetrackerapp/core/localization/locale_keys.dart';
+import 'package:expensetrackerapp/core/theme/app_theme.dart';
 import 'package:expensetrackerapp/features/add_expense/add_expense_bloc/add_expense_bloc.dart';
 import 'package:expensetrackerapp/features/add_expense/add_expense_bloc/add_expense_event.dart';
 import 'package:expensetrackerapp/features/add_expense/add_expense_bloc/add_expense_state.dart';
+import 'package:expensetrackerapp/features/add_expense/add_expense_data/add_expense_attachment_api_provider.dart';
+import 'package:expensetrackerapp/features/add_expense/add_expense_data/add_expense_attachment_repo.dart';
+import 'package:expensetrackerapp/features/add_expense/add_expense_bloc/add_expense_attachment_bloc.dart';
+import 'package:expensetrackerapp/features/add_expense/add_expense_bloc/add_expense_attachment_event.dart';
+import 'package:expensetrackerapp/features/add_expense/add_expense_bloc/add_expense_attachment_state.dart';
 import 'package:expensetrackerapp/features/add_expense/add_expense_data/expense_category_api_provider.dart';
 import 'package:expensetrackerapp/features/add_expense/add_expense_data/expense_category_repo.dart';
 import 'package:expensetrackerapp/features/add_expense/add_expense_data/expense_payment_type_api_provider.dart';
@@ -26,6 +33,7 @@ import 'package:expensetrackerapp/shared/utils/custom_snackbar.dart';
 import 'package:expensetrackerapp/shared/utils/custom_text_field.dart';
 import 'package:expensetrackerapp/shared/common_ui/build_name_field.dart';
 import 'package:expensetrackerapp/core/storage/secure_storage_service.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -56,12 +64,15 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   late final ExpensePaymentTypeRepo _expensePaymentTypeRepo;
   late final ExpenseTimeOfDayRepo _timeOfDayRepo;
 
+  late final AddExpenseAttachmentBloc _attachmentBloc;
   DateTime _selectedDate = DateTime.now();
 
   String? _selectedCategory;
   String? _selectedPaymentMode;
   String? _selectedTimeOfDay;
   String? _selectedTransactionType;
+
+  List<PlatformFile> _selectedFiles = [];
 
   @override
   void initState() {
@@ -77,6 +88,15 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
         DioClient(SecureStorageService()).dio,
       ),
     );
+
+    _attachmentBloc = AddExpenseAttachmentBloc(
+      repo: AddExpenseAttachmentRepo(
+        AddExpenseAttachmentApiProvider(
+          dio: DioClient(SecureStorageService()).dio,
+        ),
+      ),
+    );
+
     _fetchCategories();
     _fetchPaymentType();
     _fetchTimeOfDay();
@@ -117,6 +137,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     _categoryBloc.close();
     _paymentTypeBloc.close();
     _timeOfDayBloc.close();
+    _attachmentBloc.close();
     super.dispose();
   }
 
@@ -131,6 +152,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
       _selectedTimeOfDay = null;
       _selectedTransactionType = null;
       _selectedDate = DateTime.now();
+      _selectedFiles = []; // NEW
     });
   }
 
@@ -138,32 +160,32 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
     final amount = double.tryParse(_amountController.text.trim());
 
     if (_titleController.text.trim().isEmpty) {
-      _showError("Please enter a title");
+      _showError(LocaleKeys.pleaseEnterATitle.tr(context));
       return;
     }
 
     if (amount == null || amount <= 0) {
-      _showError("Please enter a valid amount");
+      _showError(LocaleKeys.pleaseEnterATitle.tr(context));
       return;
     }
 
     if (_selectedCategory == null) {
-      _showError("Please select a category");
+      _showError(LocaleKeys.pleaseSelectACategory.tr(context));
       return;
     }
 
     if (_selectedPaymentMode == null) {
-      _showError("Please select a payment mode");
+      _showError(LocaleKeys.pleaseSelectAPaymentMode.tr(context));
       return;
     }
 
     if (_selectedTransactionType == null) {
-      _showError("Please select a transaction type");
+      _showError(LocaleKeys.pleaseSelectATransactionType.tr(context));
       return;
     }
 
     if (_selectedTimeOfDay == null) {
-      _showError("Please select the period of day");
+      _showError(LocaleKeys.pleaseSelectSpentAt.tr(context));
       return;
     }
 
@@ -202,18 +224,51 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
   @override
   Widget build(BuildContext context) {
     return SizedBox.expand(
-      child: BlocListener<AddExpenseBloc, AddExpenseState>(
-        listener: (context, state) {
-          if (state is AddExpenseSuccess) {
-            _clearForm();
-            CustomSnackbar.success(context, "Expense added Successfully!!");
-            widget.onSubmitSuccess();
-          }
+      child: MultiBlocListener(
+        listeners: [
+          BlocListener<AddExpenseBloc, AddExpenseState>(
+            listener: (context, state) {
+              if (state is AddExpenseSuccess) {
+                if (_selectedFiles.isNotEmpty) {
+                  _attachmentBloc.add(
+                    UploadExpenseAttachmentEvent(
+                      expenseId: state.response.expenseId,
+                      filePaths: _selectedFiles.map((f) => f.path!).toList(),
+                    ),
+                  );
+                } else {
+                  _clearForm();
+                  CustomSnackbar.success(
+                      context, LocaleKeys.expenseAddedSuccessfully.tr(context));
+                  widget.onSubmitSuccess();
+                }
+              }
 
-          if (state is AddExpenseFailure) {
-            CustomSnackbar.error(context, state.message);
-          }
-        },
+              if (state is AddExpenseFailure) {
+                CustomSnackbar.error(context, state.message);
+              }
+            },
+          ),
+          BlocListener<AddExpenseAttachmentBloc, AddExpenseAttachmentState>(
+            bloc: _attachmentBloc,
+            listener: (context, state) {
+              if (state is AddExpenseAttachmentSuccess) {
+                _clearForm();
+                CustomSnackbar.success(context, LocaleKeys.expenseAddedSuccessfully.tr(context));
+                widget.onSubmitSuccess();
+              }
+
+              if (state is AddExpenseAttachmentFailure) {
+                CustomSnackbar.error(
+                  context,
+                  LocaleKeys.expenseSavedButAttachmentUploadFailed.tr(context),
+                );
+                _clearForm();
+                widget.onSubmitSuccess();
+              }
+            },
+          ),
+        ],
         child: Stack(
           children: [
             ClipPath(
@@ -222,7 +277,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 height: HomeHeader.height,
                 width: double.infinity,
                 child: AppBackground(
-                  child: CommonHeader(headingName: "Add Expense"),
+                  child: CommonHeader(headingName: LocaleKeys.addExpense.tr(context)),
                 ),
               ),
             ),
@@ -236,11 +291,11 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                 child: Container(
                   padding: const EdgeInsets.fromLTRB(20, 20, 20, 12),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).appColors.surface,
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.08),
+                        color: Theme.of(context).appColors.shadow,
                         blurRadius: 16,
                         offset: const Offset(0, 6),
                       ),
@@ -255,22 +310,21 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              FieldLabel("TITLE"),
+                              FieldLabel(LocaleKeys.titleUpperCase.tr(context)),
                               const SizedBox(height: 8),
                               CustomTextField(
                                 controller: _titleController,
-                                hintText: "Add your title here.....",
-                                borderColor: const Color(0xFF1F6E68),
-                                textColor: Colors.black,
+                                hintText: LocaleKeys.addYourTitleHere.tr(context),
+                                borderColor: Theme.of(context).appColors.primary,
+                                textColor: Theme.of(context).appColors.textPrimary,
                               ),
                               const SizedBox(height: 20),
-                              FieldLabel("CATEGORY"),
+                              FieldLabel(LocaleKeys.categoryUpperCase.tr(context)),
                               const SizedBox(height: 8),
                               BlocBuilder<CommonBloc, CommonState>(
                                 bloc: _categoryBloc,
                                 builder: (context, state) {
                                   final status = state.apiStatus;
-
                                   if (status is ApiLoadingState) {
                                     return const SizedBox(
                                       height: 48,
@@ -290,7 +344,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                       selectedCategory: _selectedCategory,
                                       onChanged: (value) => setState(
                                           () => _selectedCategory = value),
-                                      hintText: "Failed to load categories",
+                                      hintText: LocaleKeys.failedToLoadCategories.tr(context),
                                       dropdownItems: const [],
                                     );
                                   }
@@ -304,7 +358,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                     selectedCategory: _selectedCategory,
                                     onChanged: (value) => setState(
                                         () => _selectedCategory = value),
-                                    hintText: "Select Category",
+                                    hintText: LocaleKeys.select.tr(context),
                                     dropdownItems: categories
                                         .map(
                                           (category) => DropdownMenuItem(
@@ -325,7 +379,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        FieldLabel("PAYMENT MODE"),
+                                        FieldLabel(LocaleKeys.paymentModeUpperCase.tr(context)),
                                         const SizedBox(height: 8),
                                         BlocBuilder<CommonBloc, CommonState>(
                                           bloc: _paymentTypeBloc,
@@ -355,7 +409,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                                     () => _selectedPaymentMode =
                                                         value),
                                                 hintText:
-                                                    "Failed to load payment modes",
+                                                    LocaleKeys.failedToLoadPaymentModes.tr(context),
                                                 dropdownItems: const [],
                                               );
                                             }
@@ -373,7 +427,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                               onChanged: (value) => setState(
                                                   () => _selectedPaymentMode =
                                                       value),
-                                              hintText: "Select Payment Mode",
+                                              hintText: LocaleKeys.select.tr(context),
                                               dropdownItems: paymentTypes
                                                   .map(
                                                     (paymentType) =>
@@ -397,21 +451,21 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
-                                        FieldLabel("TRANSACTION TYPE"),
+                                        FieldLabel(LocaleKeys.transactionTypeUpperCase.tr(context)),
                                         const SizedBox(height: 8),
                                         BuildNameField(
                                           selectedCategory:
                                               _selectedTransactionType,
                                           onChanged: (value) => setState(() =>
                                               _selectedTransactionType = value),
-                                          hintText: "Transaction Type",
-                                          dropdownItems: const [
+                                          hintText: LocaleKeys.select.tr(context),
+                                          dropdownItems: [
                                             DropdownMenuItem(
                                                 value: "Income",
-                                                child: Text("Income")),
+                                                child: Text(LocaleKeys.income.tr(context))),
                                             DropdownMenuItem(
                                                 value: "Expense",
-                                                child: Text("Expense")),
+                                                child: Text(LocaleKeys.expense.tr(context))),
                                           ],
                                         ),
                                       ],
@@ -420,12 +474,12 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                 ],
                               ),
                               const SizedBox(height: 20),
-                              FieldLabel("AMOUNT"),
+                              FieldLabel(LocaleKeys.amountUpperCase.tr(context)),
                               const SizedBox(height: 8),
                               BuildAmountField(
                                   amountController: _amountController),
                               const SizedBox(height: 20),
-                              FieldLabel("DATE"),
+                              FieldLabel(LocaleKeys.dateUpperCase.tr(context)),
                               const SizedBox(height: 8),
                               BuildDateField(
                                 selectedDate: _selectedDate,
@@ -433,7 +487,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                     setState(() => _selectedDate = picked),
                               ),
                               const SizedBox(height: 20),
-                              FieldLabel("PERIOD OF DAY"),
+                              FieldLabel(LocaleKeys.spentAtUpperCase.tr(context)),
                               const SizedBox(height: 8),
                               BlocBuilder<CommonBloc, CommonState>(
                                   bloc: _timeOfDayBloc,
@@ -458,8 +512,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                         selectedCategory: _selectedTimeOfDay,
                                         onChanged: (value) => setState(
                                             () => _selectedTimeOfDay = value),
-                                        hintText:
-                                            "Failed to load Time of the Day",
+                                        hintText: LocaleKeys.failedToLoadSpentAt.tr(context),
                                         dropdownItems: const [],
                                       );
                                     }
@@ -474,7 +527,7 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                       onChanged: (value) => setState(
                                         () => _selectedTimeOfDay = value,
                                       ),
-                                      hintText: "Select Time of the Day",
+                                      hintText: LocaleKeys.egMorning.tr(context),
                                       dropdownItems: timeOfDay
                                           .map(
                                             (dayTime) =>
@@ -488,17 +541,23 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                                     );
                                   }),
                               const SizedBox(height: 20),
-                              FieldLabel("INVOICE"),
+                              FieldLabel(LocaleKeys.invoiceUpperCase.tr(context)),
                               const SizedBox(height: 8),
-                              BuildAttachmentButton(title: "Add Expense"),
+                              BuildAttachmentButton(
+                                title: LocaleKeys.addInvoice.tr(context),
+                                selectedFiles: _selectedFiles,
+                                onFilesSelected: (files) =>
+                                    setState(() => _selectedFiles = files),
+                              ),
                               const SizedBox(height: 20),
-                              FieldLabel("DESCRIPTION"),
+                              FieldLabel(LocaleKeys.descriptionUpperCase.tr(context)),
                               const SizedBox(height: 8),
                               CustomTextField(
                                 controller: _descriptionController,
-                                hintText: "Add your description here.....",
-                                borderColor: const Color(0xFF1F6E68),
-                                textColor: Colors.black,
+                                hintText: LocaleKeys.addYourDescriptionHere.tr(context),
+                                borderColor: Theme.of(context).appColors.primary,
+                                textColor: Theme.of(context).appColors.textPrimary,
+                                maxLines: 4,
                               ),
                               const SizedBox(height: 12),
                             ],
@@ -507,13 +566,23 @@ class _AddExpenseScreenState extends State<AddExpenseScreen> {
                       ),
                       const SizedBox(height: 12),
                       BlocBuilder<AddExpenseBloc, AddExpenseState>(
-                        builder: (context, state) {
-                          if (state is AddExpenseLoading) {
-                            return const Center(
-                                child: CircularProgressIndicator());
-                          }
-                          return BuildSubmitButton(
-                            onPressed: _submitExpense,
+                        builder: (context, expenseState) {
+                          return BlocBuilder<AddExpenseAttachmentBloc,
+                              AddExpenseAttachmentState>(
+                            bloc: _attachmentBloc,
+                            builder: (context, attachState) {
+                              final isLoading = expenseState
+                                      is AddExpenseLoading ||
+                                  attachState is AddExpenseAttachmentLoading;
+
+                              if (isLoading) {
+                                return const Center(
+                                    child: CircularProgressIndicator());
+                              }
+                              return BuildSubmitButton(
+                                onPressed: _submitExpense,
+                              );
+                            },
                           );
                         },
                       ),

@@ -1,3 +1,4 @@
+import 'package:expensetrackerapp/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class CommonHeader extends StatelessWidget {
@@ -12,9 +13,9 @@ class CommonHeader extends StatelessWidget {
         child: Row(
           children: [
             IconButton(
-              icon: const Icon(
+              icon: Icon(
                 Icons.arrow_back_ios,
-                color: Colors.white,
+                color: Theme.of(context).appColors.onPrimary,
                 size: 25,
               ),
               onPressed: () => Navigator.maybePop(context),
@@ -24,15 +25,15 @@ class CommonHeader extends StatelessWidget {
                 headingName,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                    color: Colors.white,
+                    color: Theme.of(context).appColors.onPrimary,
                     fontSize: 20,
                     fontWeight: FontWeight.bold),
               ),
             ),
             IconButton(
-              icon: const Icon(
+              icon: Icon(
                 Icons.more_horiz_rounded,
-                color: Colors.white,
+                color: Theme.of(context).appColors.onPrimary,
                 size: 25,
               ),
               onPressed: () {},

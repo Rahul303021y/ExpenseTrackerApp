@@ -1,16 +1,19 @@
+import 'package:expensetrackerapp/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'dashed_border_painter.dart';
 
 class DottedBorderBox extends StatelessWidget {
   final Widget child;
+  final bool selected;
+  final Color selectionColor;
 
-  const DottedBorderBox({super.key, required this.child});
+  const DottedBorderBox({super.key, required this.child, required this.selected, required this.selectionColor});
 
   @override
   Widget build(BuildContext context) {
     return CustomPaint(
       painter: DashedBorderPainter(
-        color: Colors.grey.shade400,
+        color: selected ? selectionColor : Theme.of(context).appColors.outline,
         strokeWidth: 1.5,
         radius: 12,
         dashWidth: 6,

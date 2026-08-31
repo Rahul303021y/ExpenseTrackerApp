@@ -6,17 +6,16 @@
  * ________________________________
  */
 
+import 'package:dio/dio.dart';
 import 'package:expensetrackerapp/features/add_expense/add_expense_data/add_expense_api_provider.dart';
 import 'package:expensetrackerapp/features/add_expense/add_expense_model/add_expense_request_model.dart';
 
 class AddExpenseRepo {
   final AddExpenseApiProvider apiProvider;
 
-  AddExpenseRepo(
-    this.apiProvider,
-  );
+  AddExpenseRepo(this.apiProvider);
 
-  Future<void> addExpense(AddExpenseRequest request) async {
-    await apiProvider.addExpense(request);
+  Future<Response> addExpense(AddExpenseRequest request) async {
+    return await apiProvider.addExpense(request);
   }
 }

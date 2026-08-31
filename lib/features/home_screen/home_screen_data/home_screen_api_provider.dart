@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:expensetrackerapp/core/app_constants.dart';
 
 class HomeScreenApiProvider {
   final Dio dio;
@@ -7,7 +8,7 @@ class HomeScreenApiProvider {
 
   Future<Response> getExpenses() {
     return dio.post(
-      "/expense/get-all-expenses",
+      AppConstants.getExpensesUrl,
       data: {
         "maxResults": 10,
         "pageNum": 1,
@@ -17,10 +18,10 @@ class HomeScreenApiProvider {
   }
 
   Future<Response> fetchAccountSummary() {
-    return dio.get("/account-summary/get-monthly-summary");
+    return dio.get(AppConstants.fetchAccountSummaryUrl);
   }
 
   Future<Response> deleteExpense(int expenseId) {
-    return dio.delete("/expense/delete-expense/$expenseId");
+    return dio.delete("${AppConstants.deleteExpenseUrl}$expenseId");
   }
 }

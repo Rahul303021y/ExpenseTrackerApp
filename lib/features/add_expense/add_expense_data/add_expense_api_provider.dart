@@ -7,6 +7,7 @@
  */
 
 import 'package:dio/dio.dart';
+import 'package:expensetrackerapp/core/app_constants.dart';
 import 'package:expensetrackerapp/features/add_expense/add_expense_model/add_expense_request_model.dart';
 
 class AddExpenseApiProvider {
@@ -15,6 +16,6 @@ class AddExpenseApiProvider {
   AddExpenseApiProvider(this.dio);
 
   Future<Response> addExpense(AddExpenseRequest request) {
-    return dio.post("/expense/add-update-expense", data: request.toJson());
+    return dio.post(AppConstants.addExpenseUrl, data: request.toJson());
   }
 }

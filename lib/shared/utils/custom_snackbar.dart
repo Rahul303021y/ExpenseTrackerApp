@@ -1,3 +1,4 @@
+import 'package:expensetrackerapp/core/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 
 class CustomSnackbar {
@@ -6,7 +7,7 @@ class CustomSnackbar {
     messenger.clearSnackBars();
     messenger.showSnackBar(
       SnackBar(
-        backgroundColor: const Color(0xFF1A4D1A),
+        backgroundColor: Theme.of(context).appColors.incomeContainer,
         // dark green
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(16),
@@ -18,13 +19,13 @@ class CustomSnackbar {
           children: [
             Container(
               padding: const EdgeInsets.all(6),
-              decoration: const BoxDecoration(
-                color: Color(0xFF4CAF50),
+              decoration: BoxDecoration(
+                color: Theme.of(context).appColors.income,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.check,
-                color: Colors.white,
+                color: Theme.of(context).appColors.onPrimary,
                 size: 16,
               ),
             ),
@@ -32,8 +33,8 @@ class CustomSnackbar {
             Expanded(
               child: Text(
                 message,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: Theme.of(context).appColors.onPrimary,
                   fontWeight: FontWeight.w500,
                   fontSize: 18,
                   letterSpacing: 1,
@@ -51,7 +52,7 @@ class CustomSnackbar {
     messenger.clearSnackBars();
     messenger.showSnackBar(
       SnackBar(
-        backgroundColor: const Color(0xFF7A1F1F),
+        backgroundColor: Theme.of(context).appColors.expenseContainer,
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(16),
         shape: RoundedRectangleBorder(
@@ -61,13 +62,13 @@ class CustomSnackbar {
           children: [
             Container(
               padding: const EdgeInsets.all(6),
-              decoration: const BoxDecoration(
-                color: Color(0xFFE24B4A),
+              decoration: BoxDecoration(
+                color: Theme.of(context).appColors.error,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.close_outlined,
-                color: Colors.white,
+                color: Theme.of(context).appColors.onPrimary,
                 size: 16,
               ),
             ),
@@ -75,8 +76,8 @@ class CustomSnackbar {
             Expanded(
               child: Text(
                 "$message!!",
-                style: const TextStyle(
-                    color: Colors.white,
+                style: TextStyle(
+                    color: Theme.of(context).appColors.onPrimary,
                     fontWeight: FontWeight.w500,
                     fontSize: 18,
                     letterSpacing: 1),
@@ -93,7 +94,7 @@ class CustomSnackbar {
     messenger.clearSnackBars();
     messenger.showSnackBar(
       SnackBar(
-        backgroundColor: Color(0xFF0C447C),
+        backgroundColor: Theme.of(context).appColors.infoContainer,
         behavior: SnackBarBehavior.floating,
         margin: const EdgeInsets.all(16),
         duration: const Duration(seconds: 3),
@@ -104,13 +105,13 @@ class CustomSnackbar {
           children: [
             Container(
               padding: const EdgeInsets.all(6),
-              decoration: const BoxDecoration(
-                color: Color(0xFF378ADD),
+              decoration: BoxDecoration(
+                color: Theme.of(context).appColors.info,
                 shape: BoxShape.circle,
               ),
-              child: const Icon(
+              child: Icon(
                 Icons.info_outline,
-                color: Colors.white,
+                color: Theme.of(context).appColors.onPrimary,
                 size: 16,
               ),
             ),
@@ -118,8 +119,8 @@ class CustomSnackbar {
             Expanded(
               child: Text(
                 message,
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: Theme.of(context).appColors.onPrimary,
                   fontWeight: FontWeight.w500,
                   fontSize: 18,
                   letterSpacing: 1,

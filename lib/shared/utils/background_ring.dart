@@ -16,7 +16,7 @@ class BackgroundRing extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         border: Border.all(
-          color: Colors.white.withOpacity(0.03),
+          color: Colors.white.withOpacity(0.04),
           width: 20,
         ),
       ),
